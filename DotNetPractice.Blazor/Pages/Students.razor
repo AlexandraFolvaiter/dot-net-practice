@@ -1,0 +1,54 @@
+﻿@page "/students"
+
+@using DotNetPractice.Models
+@using DotNetPractice.Services
+
+@inject IStudentsService _studentsService
+
+<PageTitle> Students Management</PageTitle>
+
+<a type="button" class="btn btn-light" href="students/create">  Add a new student</a>
+
+@if (students == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h1>There are @students.Count() students.</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Registration Number</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Birth Date</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in students)
+            {
+                <tr>
+                    <td>@student.RegistrationNumber</td>
+                    <td>@student.FirstName</td>
+                    <td>@student.LastName</td>
+                    <td>@student.BirthDate.ToShortDateString()</td>
+                    <td><a href="students/update/{@student.Id}">edit</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Student> students;
+
+    protected override async Task OnInitializedAsync()
+    {
+        students = await _studentsService.GetAll();
+
+        students = students.Reverse();
+    }
+}

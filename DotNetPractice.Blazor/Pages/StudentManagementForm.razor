@@ -1,0 +1,82 @@
+﻿@page "/students/create"
+@page "/students/update/{Id}"
+
+@using DotNetPractice.Services
+@using DotNetPractice.Models
+
+@inject IStudentsService _studentsService
+@inject NavigationManager _navManager
+
+<h3>Student Management Form</h3>
+
+<EditForm Model="@student" OnValidSubmit="@SubmitData" class="column">
+    <div>
+        <label>Registration Number: </label>
+        <InputText id="registration-number" @bind-Value="student.RegistrationNumber"/>
+    </div>
+
+    <div>
+        <label>First Name: </label>
+        <InputText id="firstname" @bind-Value="student.FirstName"/>
+    </div>
+    
+    <div>
+        <label>Last Name: </label>
+        <InputText id="lastname" @bind-Value="student.LastName" />
+    </div>
+    
+    <div>
+        <label>Birth Date: </label>
+        <InputDate id="birthdate" @bind-Value="student.BirthDate" />
+    </div>
+
+    <div>
+        <label>Group Name: </label>
+        <InputText id="group" @bind-Value="student.Group" />
+    </div>
+
+    
+    <div>
+        <label>Year: </label>
+        <InputNumber id="year" @bind-Value="student.Year" />
+    </div>
+    
+    
+    <div>
+        <label>Scholarship: </label>
+        <InputNumber id="scholarship" @bind-Value="student.Scholarship" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private StudentCreate student = new StudentCreate();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Id))
+        {
+            student = await _studentsService.GetById(Guid.Parse(Id));
+        }
+    }
+
+
+    async Task SubmitData()
+    {
+        if (!string.IsNullOrEmpty(Id))
+        {
+            await _studentsService.Update(Guid.Parse(Id), (Student)student);
+        }
+        else
+        {
+            await _studentsService.Add(student);
+        }
+
+        _navManager.NavigateTo("/students");
+    }
+}
